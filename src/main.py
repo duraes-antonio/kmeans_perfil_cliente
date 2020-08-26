@@ -1,8 +1,10 @@
 import collections
+import io
 from typing import List, Iterable
 
 import matplotlib.pyplot as pyplt
 import pandas
+import requests
 from sklearn.cluster import KMeans
 
 
@@ -54,9 +56,15 @@ def calc_qtd_cluster(inercias: List[float], variancia_aceita=25) -> int:
     return len(inercias) + 1
 
 
+def download_arq(path: str, encoding='utf8') -> object:
+    r: requests.Response = requests.get(path)
+    return io.StringIO(r.content.decode(encoding))
+
+
 def main():
     # Abra o arquivo e defina o separador de colunas
-    data_frame = pandas.read_csv('../data/customer_age_book_price.txt', sep=' ')
+    path_arq_remoto = 'https://raw.githubusercontent.com/duraes-antonio/kmeans_perfil_cliente/master/data/customer_age_book_price.txt'
+    data_frame = pandas.read_csv(download_arq(path_arq_remoto), sep=' ')
     df_valores = data_frame.values
 
     # Com base na inércia calculada pelo kmeans, identifique a qtd. de clusters
